@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export const emailRegistro = async (datos) => {
+export const emailRegister = async (data) => {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
@@ -10,25 +10,25 @@ export const emailRegistro = async (datos) => {
     },
   });
 
-  const { email, nombre, token } = datos;
+  const { email, name, token } = data;
   // Enviando email
   const info = await transporter.sendMail({
-    from: '"Administrador de Proyectos"', // sender address
+    from: '"Project Manager"', // sender address
     to: email, // list of receivers
-    subject: "Comprueba tu cuenta", // Subject line
-    text: "Comprueba tu cuenta", // plain text body
-    html: `<p>Hola ${nombre}, comprueba tu cuenta en ProjectManager</p>
-            <p>Tu cuenta ya esta lista, solo debes comprobarla en el siguiente enlace
-              <a href="${process.env.FRONTEND_URL}/confirmar/${token}" >Comprobar cuenta</a>
+    subject: "Check your account", // Subject line
+    text: "Check your account", // plain text body
+    html: `<p>Hi ${name}, check your account on Project Manager.</p>
+            <p>Your account is ready, you just need to verify it on the following link
+              <a href="${process.env.FRONTEND_URL}/confirm/${token}" >Check Account</a>
             </p>
-            <p>Si tu no creaste esta cuenta puedes ignorar este mensaje</p>
+            <p>If you did not create this account, you can ignore this message</p>
     `, // html body
   });
 
   // console.log("Message sent: %s", info.messageId);
 };
 
-export const emailOlvidePassword = async (datos) => {
+export const emailForgetPassword = async (data) => {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
@@ -38,18 +38,18 @@ export const emailOlvidePassword = async (datos) => {
     },
   });
 
-  const { email, nombre, token } = datos;
+  const { email, name, token } = data;
   // Enviando email
   const info = await transporter.sendMail({
-    from: '"Administrador de Proyectos"', // sender address
+    from: '"Project Manager"', // sender address
     to: email, // list of receivers
-    subject: "Reestablece tu password", // Subject line
-    text: "Comprueba tu cuenta", // plain text body
-    html: `<p>Hola ${nombre}, has solicitado reestablecer tu password</p>
-            <p>Sigue el siguiente enlace para generar un nuevo password
-              <a href="${process.env.FRONTEND_URL}/olvide-password/${token}" >Reestablecer password</a>
+    subject: "Reset your password", // Subject line
+    text: "Reset your password", // plain text body
+    html: `<p>Hi ${name}, You have requested to reset your password</p>
+            <p>Follow the following link to generate a new password
+              <a href="${process.env.FRONTEND_URL}/forget-password/${token}" >Reset password</a>
             </p>
-            <p>Si tu no solicitaste este email puedes ignorar este mensaje</p>
+            <p>If you did not create this account, you can ignore this message</p>
     `, // html body
   });
 

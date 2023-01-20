@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-const usuarioSchema = mongoose.Schema(
+const userSchema = mongoose.Schema(
   {
-    nombre: {
+    name: {
       type: String,
       required: true,
       trim: true,
@@ -22,7 +22,7 @@ const usuarioSchema = mongoose.Schema(
     token: {
       type: String,
     },
-    confirmado: {
+    confirmed: {
       type: Boolean,
       default: false,
     },
@@ -32,7 +32,7 @@ const usuarioSchema = mongoose.Schema(
   }
 );
 
-usuarioSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
@@ -40,10 +40,10 @@ usuarioSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-usuarioSchema.methods.comprobarPassword = async function (passwordFormulario) {
-  return await bcrypt.compare(passwordFormulario, this.password);
+userSchema.methods.checkPassword = async function (passwordForm) {
+  return await bcrypt.compare(passwordForm, this.password);
 };
 
-const Usuario = mongoose.model("Usuario", usuarioSchema);
+const User = mongoose.model("User", userSchema);
 
-export default Usuario;
+export default User;

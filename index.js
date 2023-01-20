@@ -1,19 +1,19 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import conectarDB from "./config/db.js";
-import usuarioRoutes from "./routes/usuarioRoutes.js";
-import proyectoRoutes from "./routes/proyectoRoutes.js";
-import tareaRoutes from "./routes/tareaRoutes.js";
+import connectDB from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 
 const app = express();
 app.use(express.json());
 
 dotenv.config();
 
-conectarDB();
+connectDB();
 
-// // Configurar CORS
+// Configurar CORS
 
 const whitelist = [process.env.FRONTEND_URL];
 
@@ -23,7 +23,7 @@ const corsOptions = {
       // El origen del request esta permitido
       callback(null, true);
     } else {
-      callback(new Error("No permitido por CORS"));
+      callback(new Error("Not allowed by CORS"));
     }
   },
 };
@@ -31,20 +31,20 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Routing
-app.use("/api/usuarios", usuarioRoutes);
-app.use("/api/proyectos", proyectoRoutes);
-app.use("/api/tareas", tareaRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/tasks", taskRoutes);
 
 const port = process.env.PORT || 4000;
 
-const servidor = app.listen(port, () => {
-  console.log(`Servidor corriendo en el puerto ${port}`);
+const server = app.listen(port, () => {
+  console.log(`Server running on port: ${port}`);
 });
 
 // Socket.oio
 import { Server } from "socket.io";
 
-const io = new Server(servidor, {
+const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
     origin: process.env.FRONTEND_URL,
@@ -52,31 +52,31 @@ const io = new Server(servidor, {
 });
 
 io.on("connection", (socket) => {
-  console.log("Conectado a socket.io");
+  console.log("Connect a socket.io");
 
   // Definir los eventos
-  socket.on("abrir proyecto", (proyecto) => {
-    socket.join(proyecto);
+  socket.on("open project", (project) => {
+    socket.join(project);
   });
 
   // Socket IO
-  socket.on("nueva tarea", (tarea) => {
-    const proyecto = tarea.proyecto;
-    socket.to(proyecto).emit("tarea agregada", tarea);
+  socket.on("new task", (task) => {
+    const project = task.project;
+    socket.to(project).emit("Task added", task);
   });
 
-  socket.on("eliminar tarea", (tarea) => {
-    const proyecto = tarea.proyecto;
-    socket.to(proyecto).emit("tarea eliminada", tarea);
+  socket.on("delete task", (task) => {
+    const project = task.project;
+    socket.to(project).emit("Task deleted", task);
   });
 
-  socket.on("actualizar tarea", (tarea) => {
-    const proyecto = tarea.proyecto._id;
-    socket.to(proyecto).emit("tarea actualizada", tarea);
+  socket.on("update task", (task) => {
+    const project = task.project._id;
+    socket.to(project).emit("Task updated", task);
   });
 
-  socket.on("cambiar estado", (tarea) => {
-    const proyecto = tarea.proyecto._id;
-    socket.to(proyecto).emit("nuevo estado", tarea);
+  socket.on("change state", (task) => {
+    const project = task.project._id;
+    socket.to(project).emit("New state", task);
   });
 });
